@@ -50,13 +50,26 @@ def index():
     trafico_ = requests.get("http://192.168.10.80:5012/api/trafico")
     trafico = trafico_.json()["result"]
 
+    trafico_ayer_ = requests.get("http://192.168.10.80:5012/api/trafico/ayer")
+    trafico_ayer = "{:,}".format(trafico_ayer_.json()["result"])
+
+    trafico_anno_ = requests.get("http://192.168.10.80:5012/api/trafico/anno")
+    trafico_anno = "{:,}".format(trafico_anno_.json()["result"])
+
     df = pd.DataFrame.from_dict(trafico)
 
     fig_traffic = px.bar(df, x='dia', y='trafico', color='semana', barmode='group', width=800, height=320)
 
     graphJSON_traffic = json.dumps(fig_traffic, cls=plotly.utils.PlotlyJSONEncoder)
 
-    return render_template('index.html', graphJSON_tickets=graphJSON_tickets, graphJSON_traffic=graphJSON_traffic, all_tickets=all_tickets, tickets_closed=tickets_closed, all_server_disks=all_server_disks)
+    return render_template('index.html', graphJSON_tickets=graphJSON_tickets, 
+                                        graphJSON_traffic=graphJSON_traffic, 
+                                        all_tickets=all_tickets, 
+                                        tickets_closed=tickets_closed, 
+                                        all_server_disks=all_server_disks, 
+                                        trafico_ayer=trafico_ayer,
+                                        trafico_anno=trafico_anno
+                                        )
 
 
 if __name__ == "__main__":
