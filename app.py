@@ -56,6 +56,13 @@ def index():
     trafico_anno_ = requests.get("http://192.168.10.80:5012/api/trafico/anno")
     trafico_anno = "{:,}".format(trafico_anno_.json()["result"])
 
+    apstatus_ = requests.get("http://localhost:5014/api/ap/status")
+    if apstatus_.json()['result'] == 'ok':
+        apstatus = 'Ok'
+    else:
+        apstatus = apstatus_.json()["result"]
+        print(apstatus)
+
     df = pd.DataFrame.from_dict(trafico)
 
     fig_traffic = px.bar(df, x='dia', y='trafico', color='semana', barmode='group', width=800, height=320)
@@ -68,9 +75,18 @@ def index():
                                         tickets_closed=tickets_closed, 
                                         all_server_disks=all_server_disks, 
                                         trafico_ayer=trafico_ayer,
-                                        trafico_anno=trafico_anno
+                                        trafico_anno=trafico_anno,
+                                        apstatus=apstatus
                                         )
+
+@app.route('/tables')
+def tables():
+    return render_template('tables.html')
+
+@app.route('/charts')
+def charts():
+    return render_template('charts.html')
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    app.run(debug=True, host='0.0.0.0',port=5001)
